@@ -1,0 +1,30 @@
+pipeline {
+        environment{
+                AWS_ACCESS_KEY_ID = credentials('aws-credentials')
+                AWS_SECRET_ACCESS_KEY = credentials('aws-credentials')
+        }
+    agent any
+    stages {
+         stage('Clone repository') {
+            steps {
+                script{
+                checkout scm
+                }
+            }
+        }
+        stage('login'){
+                steps{
+                        //sh 'aws configure'
+                        sh ' aws eks --region ap-south-1 update-kubeconfig --name snaptrude-DEV'
+                        }
+                }
+
+        stage('Deploy'){
+            steps {
+                 sh 'kubectl apply -f socialcom/deployment.yaml -n snaptrude'
+            }
+        }
+
+    }
+}
+
